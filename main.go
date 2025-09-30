@@ -7,11 +7,9 @@ import (
 )
 
 func main() {
-	cacheInterval := 5 * time.Second
-	client := pokeapi.NewClient(cacheInterval)
-
 	cfg := &config{
-		client: client,
+		client:  pokeapi.NewClient(5 * time.Second), // keep your client
+		Pokedex: make(map[string]Pokemon),           // add Pokedex map
 	}
 
 	startREPL(cfg)

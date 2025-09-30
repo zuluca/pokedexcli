@@ -9,9 +9,8 @@ import (
 	"github.com/zuluca/pokedexcli/internal/pokeapi"
 )
 
-func startREPL() {
+func startREPL(cfg *config) {
 	reader := bufio.NewScanner(os.Stdin)
-	cfg := &config{} //shared state between commands
 
 	for {
 		fmt.Print("Pokedex > ")
@@ -31,7 +30,7 @@ func startREPL() {
 			continue
 		}
 
-		if err := cmd.callback(cfg); err != nil {
+		if err := cmd.callback(cfg, words[1:]); err != nil {
 			fmt.Printf("Error: %v\n", err)
 		}
 
@@ -54,7 +53,7 @@ func cleanInput(text string) []string {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(*config, []string) error
 }
 
 type locationAreaResp struct {
@@ -70,6 +69,16 @@ type config struct {
 	next     *string
 	previous *string
 	client   *pokeapi.Client
+	Pokedex  map[string]Pokemon
+}
+
+type Pokemon struct {
+	Name           string
+	Height         int
+	Weight         int
+	Stats          map[string]int
+	Types          []string
+	BaseExperience int
 }
 
 func getCommands() map[string]cliCommand {
@@ -93,6 +102,29 @@ func getCommands() map[string]cliCommand {
 			name:        "mapb",
 			description: "Go back to the previous 20 location areas",
 			callback:    commandMapBack,
+		},
+		"explore": {
+			name:        "explore",
+			description: "Explore a location area and list Pokémon",
+			callback: func(cfg *config, args []string) error {
+				// pass along the rest of the words (args)
+				return commandExplore(cfg, args)
+			},
+		},
+		"catch": {
+			name:        "catch",
+			description: "Catch a Pokémon and add it to your Pokedex",
+			callback:    commandCatch,
+		},
+		"inspect": {
+			name:        "inspect",
+			description: "Inspect a caught Pokémon in your Pokedex",
+			callback:    commandInspect,
+		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "List all caught Pokémon in your Pokedex",
+			callback:    commandPokedex,
 		},
 	}
 }

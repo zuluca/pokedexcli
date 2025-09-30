@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/lucaz/pokedex/internal/pokecache"
+	"github.com/zuluca/pokedexcli/internal/pokecache"
 )
 
 type Client struct {

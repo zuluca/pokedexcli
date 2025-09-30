@@ -3,11 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 )
 
-func commandMap(cfg *config) error {
+func commandMap(cfg *config, args []string) error {
 	url := "https://pokeapi.co/api/v2/location-area/"
 	if cfg.next != nil {
 		url = *cfg.next
@@ -35,13 +33,13 @@ func commandMap(cfg *config) error {
 	return nil
 }
 
-func commandMapBack(cfg *config) error {
+func commandMapBack(cfg *config, args []string) error {
 	if cfg.previous == nil {
 		fmt.Println("you're on the first page")
 		return nil
 	}
 
-	body, err := cfg.client.FetchData(*cfg.previous))
+	body, err := cfg.client.FetchData(*cfg.previous)
 	if err != nil {
 		return err
 	}
